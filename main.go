@@ -27,8 +27,6 @@ func main() {
 		return
 	}
 
-	fmt.Printf("\n\n\nSummary:")
-
 	for name, db := range settings.Databases {
 		fmt.Println("Found database:", name)
 		for tName, table := range db.Tables {
