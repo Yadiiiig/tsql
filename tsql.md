@@ -14,5 +14,15 @@ tind://
 # tid: required default field, acts as identifier
 ```
 
+```go
+// code for tid retrieval
+end := 7
+for end < len(table.Layout) && table.Layout[end] != ':' {
+   end++
+}
+
+tid := str[7:end]
+result := table.Layout[end+1:]
+```
 run database creation: go run main.go -setup=true
 
