@@ -1,0 +1,14 @@
+name: Benchmark
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  benchmark:
+    name: Run benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run benchmarks
+        run: go test -bench=.
