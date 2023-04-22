@@ -27,10 +27,16 @@ func main() {
 		return
 	}
 
-	for k, v := range settings.Databases {
-		fmt.Println("Found database:", k)
-		for k := range v.Tables {
-			fmt.Printf("Table: %s\n", k)
+	fmt.Printf("\n\n\nSummary:")
+
+	for name, db := range settings.Databases {
+		fmt.Println("Found database:", name)
+		for tName, table := range db.Tables {
+			fmt.Printf("Table: %s\n", tName)
+			for _, field := range table.Fields {
+				fmt.Printf("> field_name: %s, field_type: %s\n", field.Name, field.Type)
+			}
+
 		}
 		fmt.Println()
 	}

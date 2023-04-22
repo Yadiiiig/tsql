@@ -3,7 +3,7 @@
 database structure:
 ```tsql
 # defining the structure of a table:
-tstr://tid:int/field_name:field_type/..:..
+tstr://tid/field_name:field_type/..:..
 
 # indices (no clue yet)
 tind://

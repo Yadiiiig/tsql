@@ -1,10 +1,12 @@
 package internal
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type Table struct {
@@ -21,7 +23,7 @@ type Field struct {
 
 /*
 # defining the structure of a table:
-tstr://tid:int/field_name:field_type/..:..
+tstr://tid:field_name:field_type/..:..
 
 # indices (no clue yet)
 tind://
@@ -64,12 +66,49 @@ func (s *Settings) BuildTable(db, name string, fields []Field) (Table, error) {
 }
 
 func (s *Settings) ReadTable(table *Table) error {
-	file, err := os.ReadFile(fmt.Sprintf("%s/.%s", table.Location, "metadata"))
+	file, err := os.Open(fmt.Sprintf("%s/.%s", table.Location, "metadata"))
 	if err != nil {
 		return err
 	}
 
-	_ = file
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		switch line[0:4] {
+		case "tstr":
+			table.Layout = line[7:]
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	fields := []Field{}
+
+	/*
+			// code for tid retrieval
+
+			end := 7
+		    for end < len(table.Layout) && table.Layout[end] != ':' {
+		        end++
+		    }
+		    tid := str[7:end]
+		    result := table.Layout[end+1:]
+	*/
+	fields = append(fields, Field{"tid", "int"})
+
+	for _, v := range strings.Split(table.Layout[4:], "/") {
+		tmp := strings.Split(v, ":")
+		if len(tmp) == 2 {
+			fields = append(fields, Field{tmp[0], tmp[1]})
+		}
+
+	}
+
+	table.Fields = fields
 
 	return nil
 }

@@ -41,7 +41,12 @@ func (s *Settings) prepareDb() error {
 				defer wg.Done()
 
 				table := Table{}
-				table.Location = fmt.Sprintf("%s/%s/%s/", s.Location, db, name)
+				table.Location = fmt.Sprintf("%s%s/%s/", s.Location, db, name)
+
+				err = s.ReadTable(&table)
+				if err != nil {
+					log.Printf("Could not read table: %s, database: %s:%s\n", name, db, err.Error())
+				}
 
 				mu.Lock()
 				dbs[db].Tables[name] = table
