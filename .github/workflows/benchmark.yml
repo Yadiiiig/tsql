@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run benchmarks
-        run: go test -bench=.
+        run: go test -bench=. ./...
