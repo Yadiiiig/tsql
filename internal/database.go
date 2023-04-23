@@ -43,7 +43,7 @@ func (s *Settings) prepareDb() error {
 				table := Table{}
 				table.Location = fmt.Sprintf("%s%s/%s/", s.Location, db, name)
 
-				err = s.ReadTable(&table)
+				err = s.ReadTable(name, &table)
 				if err != nil {
 					log.Printf("Could not read table: %s, database: %s:%s\n", name, db, err.Error())
 				}

@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -65,7 +67,7 @@ func (s *Settings) BuildTable(db, name string, fields []Field) (Table, error) {
 	return t, nil
 }
 
-func (s *Settings) ReadTable(table *Table) error {
+func (s *Settings) ReadTable(name string, table *Table) error {
 	file, err := os.Open(fmt.Sprintf("%s/.%s", table.Location, "metadata"))
 	if err != nil {
 		return err
@@ -98,6 +100,58 @@ func (s *Settings) ReadTable(table *Table) error {
 	}
 
 	table.Fields = fields
+
+	dataFiles := []string{}
+	err = filepath.Walk(table.Location, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.Name() == ".metadata" || info.IsDir() {
+			return nil
+		}
+
+		dataFiles = append(dataFiles, path)
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	err = ReadTableData(name, table, dataFiles)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ReadTableData(name string, table *Table, paths []string) error {
+	fieldIndices := make(map[int]string)
+	for k, v := range table.Fields {
+		fieldIndices[k] = v.Name
+	}
+
+	for i := 0; i < len(paths); i++ {
+		file, err := os.Open(paths[i])
+		if err != nil {
+			return err
+		}
+
+		reader := bufio.NewReader(file)
+		line, err := reader.ReadString('\n')
+		if err != nil && err != io.EOF {
+			fmt.Println("here")
+
+			return err
+		}
+
+		err = table.Unmarshal(&line, fieldIndices)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

@@ -5,6 +5,10 @@ database structure:
 # defining the structure of a table:
 tstr://tid/field_name:field_type/..:..
 
+# example:
+tid:name:string/url:string/employees:int/enabled:bool/score:float32/
+0:foo0/foo0.com/0/false/0.331657/
+
 # indices (no clue yet)
 tind://
 
